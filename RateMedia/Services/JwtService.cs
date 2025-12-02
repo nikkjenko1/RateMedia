@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using RateMedia.Models;
 
 namespace RateMedia.Services
 {
@@ -23,7 +22,7 @@ namespace RateMedia.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-                new Claim("displayName", user.DisplayName ?? "")
+                new Claim("displayName", user.UserName ?? "")
             };
 
             if (roles != null)

@@ -6,43 +6,69 @@ using RateMedia.Models;
 
 namespace RateMedia.Data
 {
-    public class ApplicationDbContext: IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> opts) : base(opts) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<MovieGenre> MovieGenres { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            // Movie-Genre many-to-many
-            builder.Entity<Movie>()
-                .HasMany(m => m.Genres)
-                .WithMany(g => g.Movies);
+            // Konfiguracija many-to-many zveze za Movie in Genre
+            modelBuilder.Entity<MovieGenre>()
+                .HasKey(mg => new { mg.MovieId, mg.GenreId });
 
-            // other relationships
-            builder.Entity<Rating>()
-                .HasOne(r => r.User)
-                .WithMany(u => u.Ratings)
-                .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<MovieGenre>()
+                .HasOne(mg => mg.Movie)
+                .WithMany(m => m.MovieGenres)
+                .HasForeignKey(mg => mg.MovieId);
 
-            builder.Entity<Comment>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<MovieGenre>()
+                .HasOne(mg => mg.Genre)
+                .WithMany(g => g.MovieGenres)
+                .HasForeignKey(mg => mg.GenreId);
 
-            builder.Entity<Favorite>()
-                .HasOne(f => f.User)
-                .WithMany(u => u.Favorites)
-                .HasForeignKey(f => f.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Zagotovimo, da ima vsak uporabnik samo eno oceno na film
+            modelBuilder.Entity<Rating>()
+                .HasIndex(r => new { r.UserId, r.MovieId })
+                .IsUnique();
+
+            // Indeksi za boljšo produktivnost
+            modelBuilder.Entity<Movie>()
+                .HasIndex(m => m.TmdbId);
+
+            modelBuilder.Entity<Movie>()
+                .HasIndex(m => m.Year);
+
+            modelBuilder.Entity<Comment>()
+                .HasIndex(c => c.MovieId);
+
+            modelBuilder.Entity<Favorite>()
+                .HasIndex(f => new { f.UserId, f.ListType });
+
+            // Seed podatki za žanre
+            modelBuilder.Entity<Genre>().HasData(
+                new Genre { Id = 1, Name = "Action" },
+                new Genre { Id = 2, Name = "Comedy" },
+                new Genre { Id = 3, Name = "Drama" },
+                new Genre { Id = 4, Name = "Horror" },
+                new Genre { Id = 5, Name = "Sci-Fi" },
+                new Genre { Id = 6, Name = "Romance" },
+                new Genre { Id = 7, Name = "Thriller" },
+                new Genre { Id = 8, Name = "Documentary" },
+                new Genre { Id = 9, Name = "Animation" },
+                new Genre { Id = 10, Name = "Fantasy" }
+            );
         }
     }
 }

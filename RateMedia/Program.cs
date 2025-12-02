@@ -1,104 +1,97 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using RateMedia.Data;
 using RateMedia.Models;
 using RateMedia.Services;
-using RateMedia.Hubs;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
 
-// DB
+// Dodaj DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity
+// Dodaj Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.User.RequireUniqueEmail = true;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
-// JWT
-var jwtSection = config.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSection["Key"]);
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
+// Konfiguracija za JWT (èe uporabljate API)
+/*
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidIssuer = jwtSection["Issuer"],
-        ValidAudience = jwtSection["Audience"],
-        ValidateIssuer = true,
-        ValidateAudience = true
-    };
-    // SignalR token from query
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/comments"))
-            {
-                context.Token = accessToken;
-            }
-            return Task.CompletedTask;
-        }
-    };
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+*/
+
+// Dodaj SignalR
+builder.Services.AddSignalR();
+
+// Dodaj servise
+builder.Services.AddScoped<ITmdbService, TmdbService>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+
+// Dodaj HttpClient za TMDb API
+builder.Services.AddHttpClient("TMDb", client =>
+{
+    client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
-// Services
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddHttpClient<ITMDbService, TMDbService>();
-
+// Dodaj Controllers in Views
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
-builder.Services.AddCors(options =>
+// Dodaj Session (èe uporabljate)
+builder.Services.AddSession(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials().AllowAnyOrigin();
-    });
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
 
-// middleware
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseCors();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapDefaultControllerRoute();
 
-app.MapControllers();
-app.MapRazorPages();
-app.MapHub<CommentsHub>("/hubs/comments");
-// Optional MVC route
+app.UseSession();
+
+// Map Controllers
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Map SignalR Hub
+app.MapHub<CommentHub>("commentHub");
 
 app.Run();

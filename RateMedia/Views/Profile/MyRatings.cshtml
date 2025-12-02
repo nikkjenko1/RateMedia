@@ -1,0 +1,59 @@
+﻿@model IEnumerable<RateMedia.Models.Rating>
+@{
+    ViewData["Title"] = "Moje ocene";
+    var ratingsList = Model.ToList();
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-star-fill text-warning"></i> Moje ocene</h1>
+        <p class="text-muted">Skupno ocen: @ratingsList.Count</p>
+    </div>
+</div>
+
+@if (ratingsList.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Film</th>
+                    <th>Leto</th>
+                    <th>Moja ocena</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rating in ratingsList)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="Movies" asp-action="Details" asp-route-id="@rating.MovieId"
+                               class="text-decoration-none">
+                                @rating.Movie.Title
+                            </a>
+                        </td>
+                        <td>@rating.Movie.Year</td>
+                        <td>
+                            <span class="badge bg-success">
+                                <i class="bi bi-star-fill"></i> @rating.Value
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-controller="Movies" asp-action="Details" asp-route-id="@rating.MovieId"
+                               class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> Poglej
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Še niste ocenili nobenega filma.
+    </div>
+}

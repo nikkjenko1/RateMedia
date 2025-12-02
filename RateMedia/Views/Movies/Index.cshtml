@@ -1,0 +1,195 @@
+﻿@model List<RateMedia.Models.Movie>
+
+@{
+    ViewData["Title"] = "Filmi";
+    var genres = ViewBag.Genres as List<RateMedia.Models.Genre>;
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-film"></i> Vsi filmi</h1>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchString" class="form-label">Iskanje</label>
+                    <input type="text" class="form-control" id="searchString" name="searchString"
+                           value="@ViewBag.SearchString" placeholder="Naslov ali opis...">
+                </div>
+                <div class="col-md-3">
+                    <label for="genreId" class="form-label">Žanr</label>
+                    <select class="form-select" id="genreId" name="genreId">
+                        <option value="">Vsi žanri</option>
+                        @if (genres != null)
+                        {
+                            @foreach (var genre in genres)
+                            {
+                                <option value="@genre.Id" selected="@(ViewBag.SelectedGenreId == genre.Id)">
+                                    @genre.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="year" class="form-label">Leto</label>
+                    <input type="number" class="form-control" id="year" name="year"
+                           value="@ViewBag.SelectedYear" placeholder="2024" min="1888" max="2100">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Išči
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Ponastavi
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="mb-3">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Dodaj film
+        </a>
+        <a asp-action="Search" class="btn btn-info text-white">
+            <i class="bi bi-cloud-download"></i> Uvozi iz TMDb
+        </a>
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4 mb-4">
+        @foreach (var movie in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm hover-shadow">
+                    @if (!string.IsNullOrEmpty(movie.PosterUrl))
+                    {
+                        <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title"
+                             style="height: 300px; object-fit: cover; cursor: pointer;"
+                             onclick="location.href='@Url.Action("Details", new { id = movie.Id })'">
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                             style="height: 300px; cursor: pointer;"
+                             onclick="location.href='@Url.Action("Details", new { id = movie.Id })'">
+                            <i class="bi bi-film" style="font-size: 4rem; color: white;"></i>
+                        </div>
+                    }
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate mb-1" title="@movie.Title">
+                            <a asp-action="Details" asp-route-id="@movie.Id" class="text-decoration-none text-dark">
+                                @movie.Title
+                            </a>
+                        </h6>
+                        <p class="card-text small mb-1">
+                            <small class="text-muted">@movie.Year</small>
+                        </p>
+                        @if (movie.MovieGenres != null && movie.MovieGenres.Any())
+                        {
+                            <p class="card-text small mb-2">
+                                @foreach (var mg in movie.MovieGenres.Take(2))
+                                {
+                                    <span class="badge bg-secondary me-1">@mg.Genre.Name</span>
+                                }
+                            </p>
+                        }
+                        @if (movie.Ratings != null && movie.Ratings.Any())
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-star-fill"></i> @movie.AverageRating.ToString("F1")
+                                </span>
+                                <small class="text-muted ms-2">(@movie.Ratings.Count)</small>
+                            </div>
+                        }
+                        else
+                        {
+                            <small class="text-muted">Brez ocen</small>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-2">
+                        <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-eye"></i> Poglej
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav aria-label="Navigacija po straneh">
+            <ul class="pagination justify-content-center">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-searchString="@ViewBag.SearchString"
+                           asp-route-genreId="@ViewBag.SelectedGenreId"
+                           asp-route-year="@ViewBag.SelectedYear">
+                            Prejšnja
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-searchString="@ViewBag.SearchString"
+                           asp-route-genreId="@ViewBag.SelectedGenreId"
+                           asp-route-year="@ViewBag.SelectedYear">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-searchString="@ViewBag.SearchString"
+                           asp-route-genreId="@ViewBag.SelectedGenreId"
+                           asp-route-year="@ViewBag.SelectedYear">
+                            Naslednja
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Ni filmov, ki bi ustrezali vašim kriterijem.
+    </div>
+}
+
+@section Scripts {
+    <style>
+        .hover-shadow {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .hover-shadow:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            }
+    </style>
+}

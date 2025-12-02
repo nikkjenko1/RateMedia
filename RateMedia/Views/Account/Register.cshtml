@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Registracija";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">
+                    <i class="bi bi-person-plus"></i> Registracija
+                </h2>
+
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">Uporabniško ime</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="userName" name="userName"
+                                   required placeholder="UporabniskoIme123">
+                        </div>
+                        <small class="text-muted">Uporabniško ime bo javno vidno.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-pošta</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   required placeholder="vas.email@primer.com">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Geslo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   required minlength="6" placeholder="••••••••">
+                        </div>
+                        <small class="text-muted">Najmanj 6 znakov, vsaj ena velika črka in številka.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Potrditev gesla</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                   required minlength="6" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-person-plus"></i> Registriraj se
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p class="mb-0">Že imate račun?</p>
+                    <a asp-action="Login" class="btn btn-outline-secondary mt-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Prijavite se
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

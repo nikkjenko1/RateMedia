@@ -1,0 +1,109 @@
+﻿@model List<RateMedia.Models.Movie>
+
+@{
+    ViewData["Title"] = "Priporočila zate";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-stars text-primary"></i> Priporočila zate</h1>
+        <p class="text-muted">Na podlagi tvojih ocen smo izbrali filme, ki bi ti lahko bili všeč</p>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
+        @foreach (var movie in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm hover-shadow position-relative">
+                    <div class="position-absolute top-0 start-0 m-2">
+                        <span class="badge bg-primary">
+                            <i class="bi bi-star"></i> Priporočeno
+                        </span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(movie.PosterUrl))
+                    {
+                        <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title"
+                             style="height: 300px; object-fit: cover; cursor: pointer;"
+                             onclick="location.href='@Url.Action("Details", new { id = movie.Id })'">
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                             style="height: 300px; cursor: pointer;"
+                             onclick="location.href='@Url.Action("Details", new { id = movie.Id })'">
+                            <i class="bi bi-film" style="font-size: 4rem; color: white;"></i>
+                        </div>
+                    }
+
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate mb-1" title="@movie.Title">
+                            <a asp-action="Details" asp-route-id="@movie.Id" class="text-decoration-none text-dark">
+                                @movie.Title
+                            </a>
+                        </h6>
+                        <p class="card-text small mb-1">
+                            <small class="text-muted">@movie.Year</small>
+                        </p>
+                        @if (movie.MovieGenres != null && movie.MovieGenres.Any())
+                        {
+                            <p class="card-text small mb-2">
+                                @foreach (var mg in movie.MovieGenres.Take(2))
+                                {
+                                    <span class="badge bg-secondary me-1">@mg.Genre.Name</span>
+                                }
+                            </p>
+                        }
+                        @if (movie.Ratings != null && movie.Ratings.Any())
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-star-fill"></i> @movie.AverageRating.ToString("F1")
+                                </span>
+                                <small class="text-muted ms-2">(@movie.Ratings.Count)</small>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 p-2">
+                        <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-sm btn-primary w-100">
+                            <i class="bi bi-eye"></i> Poglej
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-grid"></i> Prebrskaj vse filme
+        </a>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle"></i> Še nimamo dovolj podatkov za priporočila</h5>
+        <p>Ocenite nekaj filmov, da vam lahko priporočimo podobne vsebine!</p>
+        <a asp-action="Index" class="btn btn-primary mt-2">
+            <i class="bi bi-search"></i> Poišči filme za ocenjevanje
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <style>
+        .hover-shadow {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .hover-shadow:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            }
+    </style>
+}

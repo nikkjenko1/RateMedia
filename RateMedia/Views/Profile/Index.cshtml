@@ -1,0 +1,93 @@
+﻿@model RateMedia.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Moj Profil";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-person-circle" style="font-size: 6rem; color: #0d6efd;"></i>
+                </div>
+                <h4>@Model.UserName</h4>
+                <p class="text-muted">@Model.Email</p>
+                <hr>
+                <p class="small text-muted">
+                    Član od: @Model.CreatedAt.ToString("dd.MM.yyyy")
+                </p>
+            </div>
+        </div>
+
+        <div class="list-group mt-3">
+            <a asp-action="MyRatings" class="list-group-item list-group-item-action">
+                <i class="bi bi-star-fill text-warning"></i> Moje ocene
+            </a>
+            <a asp-action="MyComments" class="list-group-item list-group-item-action">
+                <i class="bi bi-chat-fill"></i> Moji komentarji
+            </a>
+            <a asp-action="MyLists" asp-route-listType="favorites"
+               class="list-group-item list-group-item-action">
+                <i class="bi bi-heart-fill text-danger"></i> Priljubljeni
+            </a>
+            <a asp-action="MyLists" asp-route-listType="watchlist"
+               class="list-group-item list-group-item-action">
+                <i class="bi bi-eye-fill text-primary"></i> Watchlist
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> Nastavitve profila</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateProfile" method="post">
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">O meni</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="4"
+                                  placeholder="Napišite nekaj o sebi...">@Model.Bio</textarea>
+                        <small class="text-muted">Povejte drugim nekaj o svojih filmskih preferencah.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Shrani spremembe
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Statistika</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
+                            <h3 class="mt-2">@Model.Ratings.Count</h3>
+                            <p class="text-muted">Ocen</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <i class="bi bi-chat-fill text-primary" style="font-size: 2rem;"></i>
+                            <h3 class="mt-2">@Model.Comments.Count</h3>
+                            <p class="text-muted">Komentarjev</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <i class="bi bi-heart-fill text-danger" style="font-size: 2rem;"></i>
+                            <h3 class="mt-2">@Model.Favorites.Count</h3>
+                            <p class="text-muted">V seznamih</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

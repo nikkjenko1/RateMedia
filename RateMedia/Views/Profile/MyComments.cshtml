@@ -1,0 +1,52 @@
+﻿@model IEnumerable<RateMedia.Models.Comment>
+@{
+    ViewData["Title"] = "Moji komentarji";
+    var commentsList = Model.ToList();
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-chat-fill text-primary"></i> Moji komentarji</h1>
+        <p class="text-muted">Skupno komentarjev: @commentsList.Count</p>
+    </div>
+</div>
+
+@if (commentsList.Any())
+{
+    @foreach (var comment in commentsList)
+    {
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-film"></i>
+                    <a asp-controller="Movies" asp-action="Details" asp-route-id="@comment.MovieId">
+                        @comment.Movie.Title
+                    </a>
+                    <small class="text-muted ms-2">@comment.CreatedAt.ToString("dd.MM.yyyy")</small>
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">@comment.Content</p>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a asp-controller="Movies" asp-action="Details" asp-route-id="@comment.MovieId"
+                   class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> Poglej film
+                </a>
+                <form asp-controller="Movies" asp-action="DeleteComment" method="post" class="d-inline">
+                    <input type="hidden" name="commentId" value="@comment.Id" />
+                    <input type="hidden" name="movieId" value="@comment.MovieId" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> Izbriši
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> Še niste dodali nobenega komentarja.
+    </div>
+}
