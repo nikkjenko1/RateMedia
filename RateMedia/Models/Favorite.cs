@@ -9,11 +9,10 @@ namespace RateMedia.Models
 
         [Required]
         [MaxLength(50)]
-        public string ListType { get; set; } = string.Empty; // "watchlist", "favorites", "to-watch"
+        public string ListType { get; set; } = string.Empty;
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
-        // Foreign keys
         public string UserId { get; set; } = string.Empty;
         public ApplicationUser User { get; set; } = null!;
 

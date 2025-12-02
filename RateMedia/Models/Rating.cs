@@ -12,7 +12,6 @@ namespace RateMedia.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Foreign keys
         public string UserId { get; set; } = string.Empty;
         public ApplicationUser User { get; set; } = null!;
 

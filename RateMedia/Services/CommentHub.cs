@@ -9,7 +9,6 @@ namespace RateMedia.Services
         {
             public async Task SendCommentAdded(int movieId, object commentDto)
             {
-                // broadcast to clients subscribed to movie group
                 await Clients.Group($"movie-{movieId}").SendAsync("CommentAdded", commentDto);
             }
 

@@ -24,7 +24,6 @@ namespace RateMedia.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Konfiguracija many-to-many zveze za Movie in Genre
             modelBuilder.Entity<MovieGenre>()
                 .HasKey(mg => new { mg.MovieId, mg.GenreId });
 
@@ -38,12 +37,10 @@ namespace RateMedia.Data
                 .WithMany(g => g.MovieGenres)
                 .HasForeignKey(mg => mg.GenreId);
 
-            // Zagotovimo, da ima vsak uporabnik samo eno oceno na film
             modelBuilder.Entity<Rating>()
                 .HasIndex(r => new { r.UserId, r.MovieId })
                 .IsUnique();
 
-            // Indeksi za boljšo produktivnost
             modelBuilder.Entity<Movie>()
                 .HasIndex(m => m.TmdbId);
 

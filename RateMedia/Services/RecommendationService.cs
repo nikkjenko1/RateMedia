@@ -16,7 +16,6 @@ public class RecommendationService : IRecommendationService
 
     public async Task<List<Movie>> GetRecommendationsForUserAsync(string userId, int count = 10)
     {
-        // Pridobi uporabnikove ocene
         var userRatings = await _context.Ratings
             .Where(r => r.UserId == userId)
             .Include(r => r.Movie)
@@ -26,7 +25,6 @@ public class RecommendationService : IRecommendationService
 
         if (!userRatings.Any())
         {
-            // Če uporabnik nima ocen, vrni najboljše filme
             return await _context.Movies
                 .Include(m => m.Ratings)
                 .OrderByDescending(m => m.Ratings.Average(r => (double?)r.Value) ?? 0)
@@ -34,7 +32,6 @@ public class RecommendationService : IRecommendationService
                 .ToListAsync();
         }
 
-        // Najdi žanre, ki jih uporabnik najraje gleda (visoke ocene)
         var favoriteGenres = userRatings
             .Where(r => r.Value >= 7)
             .SelectMany(r => r.Movie.MovieGenres.Select(mg => mg.GenreId))
@@ -44,10 +41,8 @@ public class RecommendationService : IRecommendationService
             .Select(g => g.Key)
             .ToList();
 
-        // ID-ji filmov, ki jih je uporabnik že ocenil
         var ratedMovieIds = userRatings.Select(r => r.MovieId).ToList();
 
-        // Priporoči filme iz priljubljenih žanrov, ki jih uporabnik še ni ocenil
         var recommendations = await _context.Movies
             .Where(m => !ratedMovieIds.Contains(m.Id))
             .Where(m => m.MovieGenres.Any(mg => favoriteGenres.Contains(mg.GenreId)))

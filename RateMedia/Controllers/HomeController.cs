@@ -27,7 +27,6 @@ namespace RateMedia.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Prikai top ocenjene filme
             var topMovies = await _context.Movies
                 .Include(m => m.Ratings)
                 .Include(m => m.MovieGenres)
@@ -36,14 +35,12 @@ namespace RateMedia.Controllers
                 .Take(6)
                 .ToListAsync();
 
-            // Èe je uporabnik prijavljen, prikai priporoèila
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = _userManager.GetUserId(User);
                 ViewBag.Recommendations = await _recommendationService.GetRecommendationsForUserAsync(userId!, 6);
             }
 
-            // Najnovejši filmi
             var newMovies = await _context.Movies
                 .Include(m => m.MovieGenres)
                 .ThenInclude(mg => mg.Genre)

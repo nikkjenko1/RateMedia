@@ -25,7 +25,6 @@ public class MoviesController : Controller
         _recommendationService = recommendationService;
     }
 
-    // GET: Movies
     public async Task<IActionResult> Index(string? searchString, int? genreId, int? year, int page = 1)
     {
         const int pageSize = 12;
@@ -71,7 +70,6 @@ public class MoviesController : Controller
         return View(movieList);
     }
 
-    // GET: Movies/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -110,7 +108,6 @@ public class MoviesController : Controller
         return View(movie);
     }
 
-    // GET: Movies/Create
     [Authorize]
     public async Task<IActionResult> Create()
     {
@@ -118,7 +115,6 @@ public class MoviesController : Controller
         return View();
     }
 
-    // POST: Movies/Create
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -149,7 +145,6 @@ public class MoviesController : Controller
         return View(movie);
     }
 
-    // GET: Movies/Edit/5
     [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -172,7 +167,6 @@ public class MoviesController : Controller
         return View(movie);
     }
 
-    // POST: Movies/Edit/5
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -226,7 +220,6 @@ public class MoviesController : Controller
         return View(movie);
     }
 
-    // GET: Movies/Delete/5
     [Authorize]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -248,7 +241,6 @@ public class MoviesController : Controller
         return View(movie);
     }
 
-    // POST: Movies/Delete/5
     [HttpPost, ActionName("Delete")]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -264,7 +256,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // POST: Movies/Rate
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -301,7 +292,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Details), new { id = movieId });
     }
 
-    // POST: Movies/Comment
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -328,7 +318,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Details), new { id = movieId });
     }
 
-    // POST: Movies/DeleteComment
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -348,7 +337,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Details), new { id = movieId });
     }
 
-    // POST: Movies/AddToList
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -384,7 +372,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Details), new { id = movieId });
     }
 
-    // POST: Movies/RemoveFromList
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -404,7 +391,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Details), new { id = movieId });
     }
 
-    // GET: Movies/Search
     public async Task<IActionResult> Search(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
@@ -417,7 +403,6 @@ public class MoviesController : Controller
         return View(movies);
     }
 
-    // POST: Movies/ImportFromTmdb
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
@@ -444,7 +429,6 @@ public class MoviesController : Controller
         return RedirectToAction(nameof(Details), new { id = movie.Id });
     }
 
-    // GET: Movies/Recommendations
     [Authorize]
     public async Task<IActionResult> Recommendations()
     {

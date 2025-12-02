@@ -18,7 +18,6 @@ public class ProfileController : Controller
         _userManager = userManager;
     }
 
-    // GET: Profile/MyLists
     [Authorize]
     public async Task<IActionResult> MyLists(string listType = "favorites")
     {
@@ -37,7 +36,6 @@ public class ProfileController : Controller
         return View(favorites);
     }
 
-    // GET: Profile/MyRatings
     [Authorize]
     public async Task<IActionResult> MyRatings()
     {
@@ -54,7 +52,6 @@ public class ProfileController : Controller
         return View(ratings);
     }
 
-    // GET: Profile/MyComments
     [Authorize]
     public async Task<IActionResult> MyComments()
     {

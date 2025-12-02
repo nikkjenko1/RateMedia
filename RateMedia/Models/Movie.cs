@@ -22,12 +22,10 @@ namespace RateMedia.Models
         public string? Actors { get; set; }
         public string? PosterUrl { get; set; }
 
-        // TMDb ID za sinhronizacijo
         public int? TmdbId { get; set; }
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
         public ICollection<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
         public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();

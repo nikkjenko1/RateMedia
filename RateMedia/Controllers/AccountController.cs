@@ -17,7 +17,7 @@ public class AccountController : Controller
         _signInManager = signInManager;
     }
 
-    // GET: Account/Register
+    // GET:Account/Register
     [HttpGet]
     public IActionResult Register()
     {
@@ -28,7 +28,7 @@ public class AccountController : Controller
         return View();
     }
 
-    // POST: Account/Register
+    // POST:Account/Register
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(string email, string userName, string password, string confirmPassword)
@@ -67,7 +67,7 @@ public class AccountController : Controller
         return View();
     }
 
-    // GET: Account/Login
+    // GET:Account/Login
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -80,7 +80,7 @@ public class AccountController : Controller
         return View();
     }
 
-    // POST: Account/Login
+    // POST:Account/Login
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(string email, string password, bool rememberMe, string? returnUrl = null)
@@ -115,7 +115,7 @@ public class AccountController : Controller
         return View();
     }
 
-    // POST: Account/Logout
+    // POST:Account/Logout
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
@@ -124,6 +124,4 @@ public class AccountController : Controller
         TempData["Success"] = "Uspešno ste se odjavili.";
         return RedirectToAction("Index", "Home");
     }
-
-    // Profile akcije so prestavljene v ProfileController
 }

@@ -7,7 +7,6 @@ using System.Text.Json;
 namespace RateMedia.Services
 {   
 
-    // TMDb servis za pridobivanje podatkov o filmih
     public class TmdbService : ITmdbService
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -76,7 +75,6 @@ namespace RateMedia.Services
     }
 
 
-    // DTOs za TMDb API
     public class TmdbSearchResult
     {
         public List<TmdbMovie>? Results { get; set; }
